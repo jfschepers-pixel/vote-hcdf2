@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vote – Top 10 portraits</title>
+
+  <!-- Police Exo 2 -->
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:#020617;
+      --panel:#020617ee;
+      --panel-soft:#020617cc;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#facc15;
+      --accent-soft:#fef3c7;
+      --border:#1e293b;
+      --card:#020617;
+      --card-border:#1f2937;
+      --danger:#ef4444;
+      --good:#22c55e;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:'Exo 2',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 900px at 0% 0%, #0f172a, #020617 70%),
+        radial-gradient(900px 900px at 100% 100%, #1e293b, #020617 70%);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:1200px;
+      margin:24px auto;
+      padding:0 16px 32px;
+    }
+    h1{
+      margin:0 0 8px;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      font-size:1.2rem;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    h1 span.icon{
+      font-size:1.5rem;
+    }
+    .subtitle{
+      margin-bottom:16px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .layout{
+      display:grid;
+      grid-template-columns: minmax(0,2.2fr) minmax(0,1.2fr);
+      gap:16px;
+    }
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      box-shadow:0 18px 40px rgba(0,0,0,.45);
+    }
+    .panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .panel-title{
+      font-weight:800;
+      text-transform:uppercase;
+      font-size:.85rem;
+      letter-spacing:.18em;
+      color:#e5e7eb;
+    }
+    .badge{
+      font-size:.75rem;
+      border-radius:999px;
+      padding:4px 8px;
+      border:1px solid var(--border);
+      color:var(--muted);
+    }
+
+    /* Grille portraits */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+      gap:8px;
+      padding:6px;
+      justify-items:center;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:10px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      max-width:90px;
+      cursor:pointer;
+      position:relative;
+      transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease, background .12s ease;
+    }
+    .card:hover{
+      transform:translateY(-2px);
+      border-color:#4b5563;
+      box-shadow:0 8px 18px rgba(0,0,0,.4);
+    }
+    .card.selected{
+      border-color:var(--accent);
+      background:radial-gradient(circle at 20% 0%, rgba(250,204,21,0.15), #020617);
+    }
+    .thumb{
+      aspect-ratio:3/4;
+      width:100%;
+      object-fit:cover;
+      display:block;
+      background:#000;
+    }
+    .meta{
+      padding:4px 6px;
+      font-size:10px;
+      color:var(--muted);
+      text-align:center;
+      min-height:28px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .rank-badge{
+      position:absolute;
+      top:4px;
+      left:4px;
+      width:20px;
+      height:20px;
+      border-radius:999px;
+      background:var(--accent);
+      color:#171717;
+      font-size:11px;
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 0 0 2px #020617;
+    }
+    .rank-badge span{
+      transform:translateY(0.5px);
+    }
+
+    /* Panneau classement */
+    .ranking-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+    }
+    .ranking-title{
+      font-weight:800;
+      text-transform:uppercase;
+      font-size:.85rem;
+      letter-spacing:.18em;
+    }
+    .ranking-sub{
+      font-size:.75rem;
+      color:var(--muted);
+    }
+    .counter{
+      font-size:.8rem;
+      color:var(--muted);
+    }
+    .counter strong{
+      color:var(--accent-soft);
+    }
+    .btn{
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#020617;
+      color:var(--text);
+      font-size:.75rem;
+      padding:5px 10px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      transition:background .1s ease,border-color .1s ease,transform .08s ease,opacity .12s ease;
+    }
+    .btn:hover:not(:disabled){
+      background:#111827;
+      border-color:#4b5563;
+      transform:translateY(-1px);
+    }
+    .btn:disabled{
+      opacity:.4;
+      cursor:not-allowed;
+    }
+    .btn-primary{
+      border-color:var(--accent);
+      background:linear-gradient(180deg,#facc15,#eab308);
+      color:#171717;
+      font-weight:700;
+    }
+    .btn-primary:hover:not(:disabled){
+      background:linear-gradient(180deg,#fbbf24,#ca8a04);
+      border-color:#fde68a;
+    }
+    .btn-ghost{
+      background:transparent;
+    }
+    .btn-danger{
+      border-color:var(--danger);
+      color:#fecaca;
+    }
+    .btn-danger:hover:not(:disabled){
+      background:rgba(239,68,68,0.08);
+      border-color:#fecaca;
+    }
+
+    .ranking-list{
+      list-style:none;
+      margin:0;
+      padding:0;
+      max-height:320px;
+      overflow-y:auto;
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,0.8);
+      background:var(--panel-soft);
+    }
+    .ranking-empty{
+      font-size:.8rem;
+      color:var(--muted);
+      padding:10px;
+      text-align:center;
+    }
+    .ranking-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 8px;
+      border-bottom:1px solid rgba(15,23,42,0.8);
+    }
+    .ranking-item:last-child{
+      border-bottom:none;
+    }
+    .rk-num{
+      width:20px;
+      font-weight:800;
+      font-size:.8rem;
+      color:var(--accent-soft);
+      text-align:right;
+    }
+    .rk-thumb{
+      width:32px;
+      height:32px;
+      border-radius:6px;
+      overflow:hidden;
+      border:1px solid #1f2937;
+      flex-shrink:0;
+    }
+    .rk-thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .rk-name{
+      font-size:.8rem;
+      color:#e5e7eb;
+      flex:1;
+    }
+    .rk-actions{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .rk-btn{
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      font-size:.7rem;
+      cursor:pointer;
+      padding:0 2px;
+    }
+    .rk-btn:hover{
+      color:var(--accent-soft);
+    }
+
+    .export-block{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .export-block label{
+      font-size:.75rem;
+      color:var(--muted);
+    }
+    textarea.export{
+      width:100%;
+      min-height:80px;
+      resize:vertical;
+      background:#020617;
+      border:1px solid #1f2937;
+      border-radius:10px;
+      padding:8px;
+      font-family:monospace;
+      font-size:.75rem;
+      color:var(--accent-soft);
+    }
+    .hint{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    @media (max-width:920px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span class="icon">🗳️</span> <span>Vote – Vos 10 portraits préférés</span></h1>
+  <div class="subtitle">
+    Cliquez sur les portraits pour choisir vos <strong>10 préférés</strong> (1 = votre favori absolu).
+    Utilisez ensuite les flèches pour ajuster l’ordre.
+  </div>
+
+  <div class="layout">
+    <!-- COLONNE GAUCHE : GRILLE DES PORTRAITS -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Sélection des portraits</div>
+        <div class="badge">
+          Cliquez pour sélectionner / désélectionner • Max <strong>10</strong>
+        </div>
+      </div>
+      <div id="grid" class="grid" aria-live="polite"></div>
+    </section>
+
+    <!-- COLONNE DROITE : CLASSEMENT -->
+    <section class="panel">
+      <div class="ranking-header">
+        <div>
+          <div class="ranking-title">Votre top 10</div>
+          <div class="ranking-sub">Classez vos portraits du n°1 au n°10</div>
+        </div>
+        <div class="counter">
+          Sélectionnés : <strong><span id="count-selected">0</span> / 10</strong>
+        </div>
+      </div>
+
+      <ol id="ranking" class="ranking-list"></ol>
+      <div id="ranking-empty" class="ranking-empty">
+        Aucun portrait sélectionné pour l'instant. Cliquez sur un portrait à gauche pour commencer.
+      </div>
+
+<div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+    <input id="voter-name"
+           type="text"
+           placeholder="Votre nom / pseudo (facultatif)"
+           style="flex:1; min-width:160px; padding:6px 8px; border-radius:999px; border:1px solid var(--border); background:#020617; color:var(--text); font-size:.8rem;">
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button id="btn-send" class="btn btn-primary" disabled>Envoyer mon vote</button>
+    <button id="btn-copy" class="btn btn-ghost" disabled>Copier le texte</button>
+    <button id="btn-clear" class="btn btn-ghost btn-danger" disabled>Tout effacer</button>
+  </div>
+</div>
+
+
+      <div class="export-block">
+        <label for="export">Résultat à copier / coller (Moodle, formulaire, mail…)</label>
+        <textarea id="export" class="export" readonly></textarea>
+        <div class="hint">
+          Astuce : cliquez sur <strong>« Copier mon vote »</strong>, puis collez (Ctrl+V) dans le champ de réponse du sondage.
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(()=>{
+  const STATIC_IMAGES = [
+    "portraits/adam_warlock.png",
+    "portraits/angel.png",
+    "portraits/ant-man.png",
+    "portraits/bishop.png",
+    "portraits/black_panther.png",
+    "portraits/black_panther_shuri.png",
+    "portraits/black_widow.png",
+    "portraits/cable.png",
+    "portraits/captain_america.png",
+    "portraits/Captain_Marvel.png",
+    "portraits/colossus.png",
+    "portraits/cyclope.png",
+    "portraits/deadpool.png",
+    "portraits/diablo.png",
+    "portraits/docteur_strange.png",
+    "portraits/domino.png",
+    "portraits/drax.png",
+    "portraits/gambit.png",
+    "portraits/gamora.png",
+    "portraits/ghost_spider.png",
+    "portraits/groot.png",
+    "portraits/hawkeye.png",
+    "portraits/hulk.png",
+    "portraits/ice_man.png",
+    "portraits/iron_heart.png",
+    "portraits/Iron_man.png",
+    "portraits/jubilee.png",
+    "portraits/la_guepe.png",
+    "portraits/la_sorciere_rouge.png",
+    "portraits/le_faucon.png",
+    "portraits/le_soldat_de_lhiver.png",
+    "portraits/magik.png",
+    "portraits/magneto.png",
+    "portraits/malicia.png",
+    "portraits/maria_hill.png",
+    "portraits/Miss_hulk.png",
+    "portraits/miss_marvel.png",
+    "portraits/nebula.png",
+    "portraits/nick_fury.png",
+    "portraits/nova.png",
+    "portraits/phoenix.png",
+    "portraits/psylocke.png",
+    "portraits/rocket_raccoon.png",
+    "portraits/shadowcat.png",
+    "portraits/silk.png",
+    "portraits/spdr.png",
+    "portraits/spectrum.png",
+    "portraits/Spider-man.png",
+    "portraits/spider_cochon.png",
+    "portraits/spider_man_morales.png",
+    "portraits/spider_woman.png",
+    "portraits/star_lord.png",
+    "portraits/thor.png",
+    "portraits/tornade.png",
+    "portraits/valkyrie.png",
+    "portraits/venom.png",
+    "portraits/vif_argent.png",
+    "portraits/vision.png",
+    "portraits/war_machine.png",
+    "portraits/wolverine.png",
+    "portraits/x23.png"
+  ];
+
+  const MAX_SELECTED = 10;
+
+  const gridEl      = document.getElementById('grid');
+  const rankingEl   = document.getElementById('ranking');
+  const rankingEmptyEl = document.getElementById('ranking-empty');
+  const countSelectedEl = document.getElementById('count-selected');
+  const exportEl    = document.getElementById('export');
+  const btnCopy     = document.getElementById('btn-copy');
+  const btnClear    = document.getElementById('btn-clear');
+  const btnSend     = document.getElementById('btn-send');
+const voterNameEl = document.getElementById('voter-name');
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Kew2CSSv66bwB_ychAWenAPfv0xGX4mtRykddftDKgEikESfh/exec";
+
+
+
+  const portraits = STATIC_IMAGES.map(path => {
+    const rawName = path.split("/").pop();
+    // Nom affiché : sans extension, _ -> espace, majuscule à chaque mot
+    let displayName = rawName
+      .replace(/\.[^/.]+$/, "")      // enlève extension
+      .replace(/_/g, " ")           // _ -> espace
+      .split(" ")
+      .filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+    return {
+      id: path,
+      url: path,
+      fileName: rawName,
+      displayName
+    };
+  });
+
+  let selected = []; // tableau de portraits dans l'ordre de préférence (0 = n°1, etc.)
+
+  function isSelected(id){
+    return selected.findIndex(p => p.id === id);
+  }
+
+  function toggleSelect(id){
+    const indexInSelected = selected.findIndex(p => p.id === id);
+    if (indexInSelected !== -1) {
+      // déjà sélectionné → on retire
+      selected.splice(indexInSelected, 1);
+    } else {
+      // pas encore sélectionné
+      if (selected.length >= MAX_SELECTED) {
+        alert("Vous avez déjà choisi 10 portraits. Retirez-en un ou modifiez l'ordre.");
+        return;
+      }
+      const p = portraits.find(p => p.id === id);
+      if (p) selected.push(p);
+    }
+    render();
+  }
+
+  function moveUp(idx){
+    if (idx <= 0) return;
+    [selected[idx-1], selected[idx]] = [selected[idx], selected[idx-1]];
+    render();
+  }
+
+  function moveDown(idx){
+    if (idx >= selected.length-1) return;
+    [selected[idx+1], selected[idx]] = [selected[idx], selected[idx+1]];
+    render();
+  }
+
+  function removeAt(idx){
+    selected.splice(idx,1);
+    render();
+  }
+
+  function clearAll(){
+    if (!selected.length) return;
+    if (!confirm("Effacer toute votre sélection ?")) return;
+    selected = [];
+    render();
+  }
+
+  function updateExportText(){
+    if (!selected.length){
+      exportEl.value = "";
+      return;
+    }
+    const lines = selected.map((p, i) => `${i+1} - ${p.displayName}`);
+    exportEl.value = lines.join("\n");
+  }
+
+  async function copyVote(){
+    if (!selected.length){
+      alert("Vous n'avez sélectionné aucun portrait.");
+      return;
+    }
+    updateExportText();
+    const text = exportEl.value;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        alert("Votre vote a été copié dans le presse-papier. Vous pouvez maintenant le coller dans le formulaire / mail.");
+      } else {
+        exportEl.select();
+        document.execCommand("copy");
+        alert("Votre vote a été copié dans le presse-papier (méthode classique).");
+      }
+    } catch (e) {
+      alert("Impossible de copier automatiquement. Sélectionnez le texte et copiez-le manuellement (Ctrl+C).");
+    }
+  }
+  
+  async function sendVoteToSheet() {
+  if (!selected.length) {
+    alert("Vous n'avez sélectionné aucun portrait.");
+    return;
+  }
+  // Optionnel : exiger exactement 10
+  if (selected.length < 10) {
+    if (!confirm("Vous n'avez pas encore choisi 10 portraits. Envoyer quand même ?")) {
+      return;
+    }
+  }
+
+  const name = (voterNameEl.value || "").trim();
+
+  // Construire le tableau ranking pour le script
+  const rankingPayload = selected.map((p, i) => ({
+    rank: i + 1,
+    id: p.id,
+    name: p.displayName
+  }));
+
+  const payload = {
+    name: name,
+    ranking: rankingPayload
+  };
+
+  btnSend.disabled = true;
+  btnSend.textContent = "Envoi...";
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors", // simplifie les problèmes de CORS
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    alert("Merci, votre vote a été enregistré !");
+  } catch (err) {
+    console.error(err);
+    alert("Erreur lors de l'envoi. Vous pouvez copier le texte et me l'envoyer par mail.");
+  } finally {
+    btnSend.disabled = false;
+    btnSend.textContent = "Envoyer mon vote";
+  }
+}
+
+
+  function renderGrid(){
+    gridEl.innerHTML = "";
+    portraits.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const idx = selected.findIndex(s => s.id === p.id);
+      const isSel = idx !== -1;
+      if (isSel) card.classList.add("selected");
+
+      const img = document.createElement("img");
+      img.src = p.url;
+      img.alt = p.displayName;
+      img.className = "thumb";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.textContent = p.displayName;
+
+      card.appendChild(img);
+      card.appendChild(meta);
+
+      if (isSel){
+        const badge = document.createElement("div");
+        badge.className = "rank-badge";
+        const span = document.createElement("span");
+        span.textContent = idx+1;
+        badge.appendChild(span);
+        card.appendChild(badge);
+      }
+
+      card.addEventListener("click", ()=>toggleSelect(p.id));
+
+      gridEl.appendChild(card);
+    });
+  }
+
+  function renderRanking(){
+    rankingEl.innerHTML = "";
+    if (!selected.length){
+      rankingEmptyEl.style.display = "block";
+    } else {
+      rankingEmptyEl.style.display = "none";
+    }
+
+    selected.forEach((p, idx) => {
+      const li = document.createElement("li");
+      li.className = "ranking-item";
+
+      const num = document.createElement("div");
+      num.className = "rk-num";
+      num.textContent = idx+1;
+
+      const thumb = document.createElement("div");
+      thumb.className = "rk-thumb";
+      const img = document.createElement("img");
+      img.src = p.url;
+      img.alt = p.displayName;
+      thumb.appendChild(img);
+
+      const name = document.createElement("div");
+      name.className = "rk-name";
+      name.textContent = p.displayName;
+
+      const actions = document.createElement("div");
+      actions.className = "rk-actions";
+
+      const btnUp = document.createElement("button");
+      btnUp.className = "rk-btn";
+      btnUp.textContent = "▲";
+      btnUp.title = "Monter";
+      btnUp.disabled = (idx === 0);
+      btnUp.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        moveUp(idx);
+      });
+
+      const btnDown = document.createElement("button");
+      btnDown.className = "rk-btn";
+      btnDown.textContent = "▼";
+      btnDown.title = "Descendre";
+      btnDown.disabled = (idx === selected.length-1);
+      btnDown.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        moveDown(idx);
+      });
+
+      const btnRemove = document.createElement("button");
+      btnRemove.className = "rk-btn";
+      btnRemove.textContent = "✕";
+      btnRemove.title = "Retirer";
+      btnRemove.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        removeAt(idx);
+      });
+
+      actions.appendChild(btnUp);
+      actions.appendChild(btnDown);
+      actions.appendChild(btnRemove);
+
+      li.appendChild(num);
+      li.appendChild(thumb);
+      li.appendChild(name);
+      li.appendChild(actions);
+
+      rankingEl.appendChild(li);
+    });
+
+    countSelectedEl.textContent = selected.length;
+    btnCopy.disabled = selected.length === 0;
+    btnClear.disabled = selected.length === 0;
+	btnSend.disabled = selected.length === 0;
+
+    updateExportText();
+  }
+
+  function render(){
+    renderGrid();
+    renderRanking();
+  }
+
+  btnCopy.addEventListener("click", copyVote);
+  btnClear.addEventListener("click", clearAll);
+  btnSend.addEventListener("click", sendVoteToSheet);
+
+  render();
+})();
+</script>
+</body>
+</html>
