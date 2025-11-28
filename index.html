@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vote – Top 10 portraits</title>
+  <title>Vote - Demi-finale 2</title>
 
   <!-- Police Exo 2 -->
   <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -116,7 +116,7 @@
     }
     .card.selected{
       border-color:var(--accent);
-      background:radial-gradient(circle at 20% 0%, rgba(250,204,21,0.15), #020617);
+      background:radial-gradient(circle at 20% 0%, rgba(250,204,21,0.18), #020617);
     }
     .thumb{
       aspect-ratio:3/4;
@@ -293,32 +293,36 @@
       color:var(--accent-soft);
     }
 
-    .export-block{
-      margin-top:10px;
+    .field-block{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:4px;
+      margin-top:8px;
     }
-    .export-block label{
-      font-size:.75rem;
-      color:var(--muted);
-    }
-    textarea.export{
-      width:100%;
-      min-height:80px;
-      resize:vertical;
-      background:#020617;
-      border:1px solid #1f2937;
-      border-radius:10px;
-      padding:8px;
-      font-family:monospace;
-      font-size:.75rem;
+    .field-label{
+      font-size:.78rem;
       color:var(--accent-soft);
+      font-weight:600;
+      letter-spacing:.04em;
+      text-transform:uppercase;
     }
-    .hint{
-      font-size:.75rem;
-      color:var(--muted);
-      margin-top:4px;
+    .input-pseudo{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--accent);
+      background:#020617;
+      color:var(--text);
+      font-size:.85rem;
+      box-shadow:0 0 0 1px rgba(250,204,21,0.18);
+    }
+    .input-pseudo::placeholder{
+      color:#6b7280;
+      font-style:italic;
+    }
+    .input-pseudo:focus{
+      outline:none;
+      border-color:#fde68a;
+      box-shadow:0 0 0 2px rgba(250,250,210,0.3);
     }
 
     @media (max-width:920px){
@@ -330,17 +334,17 @@
 </head>
 <body>
 <div class="wrap">
-  <h1><span class="icon">🗳️</span> <span>Vote – Vos 10 portraits préférés</span></h1>
+  <h1><span class="icon">🗳️</span> <span>Vote - Demi-finale 2</span></h1>
   <div class="subtitle">
-    Cliquez sur les portraits pour choisir vos <strong>10 préférés</strong> (1 = votre favori absolu).
-    Utilisez ensuite les flèches pour ajuster l’ordre.
+    Votez pour vos <strong>10 héros préférés</strong> parmi la sélection ci-dessous.
+    Cliquez sur les portraits pour les choisir, puis ajustez l’ordre (1 = votre favori absolu).
   </div>
 
   <div class="layout">
     <!-- COLONNE GAUCHE : GRILLE DES PORTRAITS -->
     <section class="panel">
       <div class="panel-header">
-        <div class="panel-title">Sélection des portraits</div>
+        <div class="panel-title">Votez pour vos 10 héros préférés</div>
         <div class="badge">
           Cliquez pour sélectionner / désélectionner • Max <strong>10</strong>
         </div>
@@ -353,7 +357,7 @@
       <div class="ranking-header">
         <div>
           <div class="ranking-title">Votre top 10</div>
-          <div class="ranking-sub">Classez vos portraits du n°1 au n°10</div>
+          <div class="ranking-sub">Classez vos héros du n°1 au n°10</div>
         </div>
         <div class="counter">
           Sélectionnés : <strong><span id="count-selected">0</span> / 10</strong>
@@ -362,30 +366,21 @@
 
       <ol id="ranking" class="ranking-list"></ol>
       <div id="ranking-empty" class="ranking-empty">
-        Aucun portrait sélectionné pour l'instant. Cliquez sur un portrait à gauche pour commencer.
+        Aucun héros sélectionné pour l'instant. Cliquez sur un portrait à gauche pour commencer.
       </div>
 
-<div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-  <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-    <input id="voter-name"
-           type="text"
-           placeholder="Votre nom / pseudo (facultatif)"
-           style="flex:1; min-width:160px; padding:6px 8px; border-radius:999px; border:1px solid var(--border); background:#020617; color:var(--text); font-size:.8rem;">
-  </div>
-  <div style="display:flex; gap:8px; flex-wrap:wrap;">
-    <button id="btn-send" class="btn btn-primary" disabled>Envoyer mon vote</button>
-    <button id="btn-copy" class="btn btn-ghost" disabled>Copier le texte</button>
-    <button id="btn-clear" class="btn btn-ghost btn-danger" disabled>Tout effacer</button>
-  </div>
-</div>
+      <div class="field-block">
+        <label for="voter-name" class="field-label">Votre pseudo (obligatoire)</label>
+        <input id="voter-name"
+               class="input-pseudo"
+               type="text"
+               placeholder="Ex. Shep, Pseudo joueur..."
+        />
+      </div>
 
-
-      <div class="export-block">
-        <label for="export">Résultat à copier / coller (Moodle, formulaire, mail…)</label>
-        <textarea id="export" class="export" readonly></textarea>
-        <div class="hint">
-          Astuce : cliquez sur <strong>« Copier mon vote »</strong>, puis collez (Ctrl+V) dans le champ de réponse du sondage.
-        </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+        <button id="btn-send" class="btn btn-primary" disabled>Envoyer mon vote</button>
+        <button id="btn-clear" class="btn btn-ghost btn-danger" disabled>Tout effacer</button>
       </div>
     </section>
   </div>
@@ -393,68 +388,41 @@
 
 <script>
 (()=>{
+  // 🔗 Remplace cette constante par l'URL de TON script Google Apps Script (déploiement Web)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Kew2CSSv66bwB_ychAWenAPfv0xGX4mtRykddftDKgEikESfh/exec";
+
+  // On ne garde QUE les 30 portraits demandés
   const STATIC_IMAGES = [
-    "portraits/adam_warlock.png",
-    "portraits/angel.png",
-    "portraits/ant-man.png",
-    "portraits/bishop.png",
-    "portraits/black_panther.png",
-    "portraits/black_panther_shuri.png",
-    "portraits/black_widow.png",
-    "portraits/cable.png",
-    "portraits/captain_america.png",
-    "portraits/Captain_Marvel.png",
-    "portraits/colossus.png",
-    "portraits/cyclope.png",
-    "portraits/deadpool.png",
-    "portraits/diablo.png",
-    "portraits/docteur_strange.png",
-    "portraits/domino.png",
-    "portraits/drax.png",
-    "portraits/gambit.png",
-    "portraits/gamora.png",
-    "portraits/ghost_spider.png",
-    "portraits/groot.png",
-    "portraits/hawkeye.png",
-    "portraits/hulk.png",
     "portraits/ice_man.png",
-    "portraits/iron_heart.png",
-    "portraits/Iron_man.png",
-    "portraits/jubilee.png",
-    "portraits/la_guepe.png",
-    "portraits/la_sorciere_rouge.png",
-    "portraits/le_faucon.png",
-    "portraits/le_soldat_de_lhiver.png",
-    "portraits/magik.png",
-    "portraits/magneto.png",
-    "portraits/malicia.png",
-    "portraits/maria_hill.png",
-    "portraits/Miss_hulk.png",
-    "portraits/miss_marvel.png",
-    "portraits/nebula.png",
-    "portraits/nick_fury.png",
-    "portraits/nova.png",
-    "portraits/phoenix.png",
-    "portraits/psylocke.png",
-    "portraits/rocket_raccoon.png",
-    "portraits/shadowcat.png",
-    "portraits/silk.png",
-    "portraits/spdr.png",
-    "portraits/spectrum.png",
-    "portraits/Spider-man.png",
-    "portraits/spider_cochon.png",
-    "portraits/spider_man_morales.png",
-    "portraits/spider_woman.png",
-    "portraits/star_lord.png",
-    "portraits/thor.png",
-    "portraits/tornade.png",
-    "portraits/valkyrie.png",
-    "portraits/venom.png",
-    "portraits/vif_argent.png",
-    "portraits/vision.png",
     "portraits/war_machine.png",
+    "portraits/gamora.png",
+    "portraits/spdr.png",
+    "portraits/x23.png",
+    "portraits/jubilee.png",
+    "portraits/spider_man_morales.png",
+    "portraits/ant-man.png",
+    "portraits/cable.png",
+    "portraits/black_widow.png",
+    "portraits/le_faucon.png",
+    "portraits/nick_fury.png",
+    "portraits/vision.png",
+    "portraits/spider_woman.png",
+    "portraits/drax.png",
+    "portraits/Spider-man.png",
+    "portraits/nova.png",
+    "portraits/black_panther.png",
+    "portraits/silk.png",
+    "portraits/black_panther_shuri.png",
+    "portraits/thor.png",
+    "portraits/spectrum.png",
+    "portraits/malicia.png",
+    "portraits/Captain_Marvel.png",
     "portraits/wolverine.png",
-    "portraits/x23.png"
+    "portraits/hulk.png",
+    "portraits/le_soldat_de_lhiver.png",
+    "portraits/venom.png",
+    "portraits/angel.png",
+    "portraits/hawkeye.png"
   ];
 
   const MAX_SELECTED = 10;
@@ -463,21 +431,15 @@
   const rankingEl   = document.getElementById('ranking');
   const rankingEmptyEl = document.getElementById('ranking-empty');
   const countSelectedEl = document.getElementById('count-selected');
-  const exportEl    = document.getElementById('export');
-  const btnCopy     = document.getElementById('btn-copy');
   const btnClear    = document.getElementById('btn-clear');
   const btnSend     = document.getElementById('btn-send');
-const voterNameEl = document.getElementById('voter-name');
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Kew2CSSv66bwB_ychAWenAPfv0xGX4mtRykddftDKgEikESfh/exec";
-
-
+  const voterNameEl = document.getElementById('voter-name');
 
   const portraits = STATIC_IMAGES.map(path => {
     const rawName = path.split("/").pop();
-    // Nom affiché : sans extension, _ -> espace, majuscule à chaque mot
     let displayName = rawName
       .replace(/\.[^/.]+$/, "")      // enlève extension
-      .replace(/_/g, " ")           // _ -> espace
+      .replace(/_/g, " ")            // _ -> espace
       .split(" ")
       .filter(Boolean)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
@@ -490,21 +452,16 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Ke
     };
   });
 
-  let selected = []; // tableau de portraits dans l'ordre de préférence (0 = n°1, etc.)
-
-  function isSelected(id){
-    return selected.findIndex(p => p.id === id);
-  }
+  let selected = []; // tableau de portraits dans l'ordre (0 = n°1, ...)
 
   function toggleSelect(id){
     const indexInSelected = selected.findIndex(p => p.id === id);
     if (indexInSelected !== -1) {
-      // déjà sélectionné → on retire
+      // déjà sélectionné → enlever
       selected.splice(indexInSelected, 1);
     } else {
-      // pas encore sélectionné
       if (selected.length >= MAX_SELECTED) {
-        alert("Vous avez déjà choisi 10 portraits. Retirez-en un ou modifiez l'ordre.");
+        alert("Vous avez déjà choisi 10 héros. Retirez-en un ou modifiez l'ordre.");
         return;
       }
       const p = portraits.find(p => p.id === id);
@@ -537,83 +494,12 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Ke
     render();
   }
 
-  function updateExportText(){
-    if (!selected.length){
-      exportEl.value = "";
-      return;
-    }
-    const lines = selected.map((p, i) => `${i+1} - ${p.displayName}`);
-    exportEl.value = lines.join("\n");
+  function updateButtons(){
+    const hasPseudo = voterNameEl.value.trim().length > 0;
+    btnClear.disabled = selected.length === 0;
+    // Envoyer uniquement si EXACTEMENT 10 + pseudo rempli
+    btnSend.disabled = !(selected.length === MAX_SELECTED && hasPseudo);
   }
-
-  async function copyVote(){
-    if (!selected.length){
-      alert("Vous n'avez sélectionné aucun portrait.");
-      return;
-    }
-    updateExportText();
-    const text = exportEl.value;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-        alert("Votre vote a été copié dans le presse-papier. Vous pouvez maintenant le coller dans le formulaire / mail.");
-      } else {
-        exportEl.select();
-        document.execCommand("copy");
-        alert("Votre vote a été copié dans le presse-papier (méthode classique).");
-      }
-    } catch (e) {
-      alert("Impossible de copier automatiquement. Sélectionnez le texte et copiez-le manuellement (Ctrl+C).");
-    }
-  }
-  
-  async function sendVoteToSheet() {
-  if (!selected.length) {
-    alert("Vous n'avez sélectionné aucun portrait.");
-    return;
-  }
-  // Optionnel : exiger exactement 10
-  if (selected.length < 10) {
-    if (!confirm("Vous n'avez pas encore choisi 10 portraits. Envoyer quand même ?")) {
-      return;
-    }
-  }
-
-  const name = (voterNameEl.value || "").trim();
-
-  // Construire le tableau ranking pour le script
-  const rankingPayload = selected.map((p, i) => ({
-    rank: i + 1,
-    id: p.id,
-    name: p.displayName
-  }));
-
-  const payload = {
-    name: name,
-    ranking: rankingPayload
-  };
-
-  btnSend.disabled = true;
-  btnSend.textContent = "Envoi...";
-
-  try {
-    await fetch(SCRIPT_URL, {
-      method: "POST",
-      mode: "no-cors", // simplifie les problèmes de CORS
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    alert("Merci, votre vote a été enregistré !");
-  } catch (err) {
-    console.error(err);
-    alert("Erreur lors de l'envoi. Vous pouvez copier le texte et me l'envoyer par mail.");
-  } finally {
-    btnSend.disabled = false;
-    btnSend.textContent = "Envoyer mon vote";
-  }
-}
-
 
   function renderGrid(){
     gridEl.innerHTML = "";
@@ -647,7 +533,6 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Ke
       }
 
       card.addEventListener("click", ()=>toggleSelect(p.id));
-
       gridEl.appendChild(card);
     });
   }
@@ -724,11 +609,52 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Ke
     });
 
     countSelectedEl.textContent = selected.length;
-    btnCopy.disabled = selected.length === 0;
-    btnClear.disabled = selected.length === 0;
-	btnSend.disabled = selected.length === 0;
+    updateButtons();
+  }
 
-    updateExportText();
+  async function sendVoteToSheet() {
+    if (selected.length !== MAX_SELECTED) {
+      alert("Veuillez choisir exactement 10 héros avant d'envoyer votre vote.");
+      return;
+    }
+    const name = voterNameEl.value.trim();
+    if (!name) {
+      alert("Veuillez indiquer votre pseudo avant d'envoyer votre vote.");
+      return;
+    }
+
+    const rankingPayload = selected.map((p, i) => ({
+      rank: i + 1,
+      id: p.id,
+      name: p.displayName
+    }));
+
+    const payload = {
+      name: name,
+      ranking: rankingPayload
+    };
+
+    btnSend.disabled = true;
+    const oldText = btnSend.textContent;
+    btnSend.textContent = "Envoi...";
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      alert("Merci, votre vote a été enregistré !");
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de l'envoi. Merci de prévenir l'organisateur.");
+    } finally {
+      btnSend.textContent = oldText;
+      // On ne réactive pas forcément, l'utilisateur peut éventuellement revoter, à toi de voir.
+      updateButtons();
+    }
   }
 
   function render(){
@@ -736,9 +662,9 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqQs2v3zroSPIYmq4Ke
     renderRanking();
   }
 
-  btnCopy.addEventListener("click", copyVote);
   btnClear.addEventListener("click", clearAll);
   btnSend.addEventListener("click", sendVoteToSheet);
+  voterNameEl.addEventListener("input", updateButtons);
 
   render();
 })();
