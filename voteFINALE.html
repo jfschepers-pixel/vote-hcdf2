@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote – Finale</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#020617;
+  --panel:#020617ee;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --accent:#facc15;
+  --border:#1e293b;
+  --card:#020617;
+  --card-border:#1f2937;
+}
+
+html,body{
+  margin:0;
+  background:#020617;
+  color:var(--text);
+  font-family:"Exo 2",sans-serif;
+}
+
+.wrap{
+  max-width:1200px; margin:20px auto; padding:0 16px;
+}
+
+h1{
+  font-size:1.4rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.subtitle{ color:var(--muted); margin-bottom:20px; }
+
+.layout{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:20px;
+}
+
+@media(max-width:900px){
+  .layout{ grid-template-columns:1fr; }
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:12px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.12s;
+}
+
+.card.selected{
+  border-color:var(--accent);
+  box-shadow:0 0 12px #facc15aa;
+}
+
+.thumb{
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+}
+
+.meta{
+  padding:6px;
+  text-align:center;
+  font-size:.85rem;
+  color:var(--muted);
+}
+
+.badge{
+  font-size:.75rem;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:4px 10px;
+  margin-bottom:10px;
+  display:inline-block;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  font-size:1rem;
+  margin-bottom:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:#0f172a;
+  color:white;
+}
+
+.btn{
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:#020617;
+  color:white;
+  cursor:pointer;
+  font-size:1rem;
+}
+.btn.primary{
+  background:linear-gradient(180deg,#facc15,#eab308);
+  color:black;
+  border:none;
+  font-weight:700;
+}
+
+.btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+.selected-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.selected-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.85rem;
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#0f172a;
+}
+
+.selected-item img{
+  width:40px;
+  height:53px;
+  object-fit:cover;
+  border-radius:6px;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<h1>Vote – Finale</h1>
+<div class="subtitle">Sélectionnez vos <b>10 héros préférés</b>, puis envoyez votre vote.</div>
+
+<div class="layout">
+
+<!-- ===================== COLONNE GAUCHE ===================== -->
+<section class="panel">
+
+  <div class="badge">
+    Héros : <span id="count">0</span>/10 sélectionnés
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+</section>
+
+
+<!-- ===================== COLONNE DROITE ===================== -->
+<section class="panel">
+
+  <h3>Pseudo</h3>
+  <input id="pseudo" placeholder="Entrez votre pseudo">
+
+  <h3>Votre vote</h3>
+  <div id="selected-list" class="selected-list">
+    <div style="color:var(--muted); font-size:.85rem;">Aucun héros sélectionné.</div>
+  </div>
+
+  <br>
+  <button id="sendBtn" class="btn primary" disabled>Envoyer mon vote</button>
+
+</section>
+
+</div>
+</div>
+
+<script>
+// ------------------------------------------------------------
+// LISTE DES HÉROS POUR LA FINALE
+// ------------------------------------------------------------
+const HEROES = [
+  "psylocke.png",
+  "bishop.png",
+  "magik.png",
+  "domino.png",
+  "iron_heart.png",
+  "magneto.png",
+  "ghost_spider.png",
+  "Iron_man.png",
+  "captain_america.png",
+  "la_sorciere_rouge.png",
+  "tornade.png",
+  "docteur_strange.png",
+  "x23.png",
+  "spdr.png",
+  "wolverine.png",
+  "cable.png",
+  "venom.png",
+  "le_soldat_de_lhiver.png",
+  "Spider-man.png",
+  "ant-man.png",
+  "Captain_Marvel.png",
+  "black_widow.png",
+  "nova.png",
+  "spider_woman.png"
+];
+
+const MAX = 10;
+const grid = document.getElementById("grid");
+const selectedList = document.getElementById("selected-list");
+const countEl = document.getElementById("count");
+const pseudoEl = document.getElementById("pseudo");
+const sendBtn = document.getElementById("sendBtn");
+
+let selected = [];
+
+// Normalisation du nom
+function formatName(file){
+  return file.replace(".png","")
+             .replace(/_/g," ")
+             .replace(/-/g," ")
+             .split(" ")
+             .filter(Boolean)
+             .map(w => w[0].toUpperCase() + w.slice(1))
+             .join(" ");
+}
+
+// Génération des cartes
+HEROES.forEach(file=>{
+  const card = document.createElement("div");
+  card.className = "card";
+  card.dataset.id = file;
+
+  const img = document.createElement("img");
+  img.src = "portraits/" + file;
+  img.className = "thumb";
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  meta.textContent = formatName(file);
+
+  card.appendChild(img);
+  card.appendChild(meta);
+
+  card.addEventListener("click", ()=> toggleHero(file, card));
+  grid.appendChild(card);
+});
+
+function toggleHero(file, card){
+  if(selected.includes(file)){
+    selected = selected.filter(h=>h!==file);
+    card.classList.remove("selected");
+  } else {
+    if(selected.length >= MAX) return;
+    selected.push(file);
+    card.classList.add("selected");
+  }
+  renderSelected();
+}
+
+function renderSelected(){
+  countEl.textContent = selected.length;
+
+  selectedList.innerHTML = "";
+
+  selected.forEach(file=>{
+    const row = document.createElement("div");
+    row.className = "selected-item";
+
+    const img = document.createElement("img");
+    img.src = "portraits/" + file;
+
+    const name = document.createElement("div");
+    name.textContent = formatName(file);
+
+    row.appendChild(img);
+    row.appendChild(name);
+
+    selectedList.appendChild(row);
+  });
+
+  if(selected.length === 0){
+    selectedList.innerHTML = `<div style="color:var(--muted); font-size:.85rem;">Aucun héros sélectionné.</div>`;
+  }
+
+  updateSendState();
+}
+
+function updateSendState(){
+  sendBtn.disabled = !(selected.length === MAX && pseudoEl.value.trim().length > 0);
+}
+
+pseudoEl.addEventListener("input", updateSendState);
+
+// ------------------------------------------------------------
+// ENVOI VERS GOOGLE SHEET (si URL fournie)
+// ------------------------------------------------------------
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWccMQdSplXxDZQKl-SZg5PVIPUylIbHFUQ4J537Z1tORJVbwqP4tW0s24I9QEvv8/exec";  // ← À REMPLACER
+
+sendBtn.addEventListener("click", async () => {
+  if(!SCRIPT_URL.startsWith("http")){
+    alert("Vote enregistré localement.\n(Configure SCRIPT_URL pour activer Google Sheets)");
+    return;
+  }
+
+  const payload = {
+    name: pseudoEl.value.trim(),
+    ranking: selected.map((f,i)=>({
+      rank: i+1,
+      id: f,
+      name: formatName(f)
+    }))
+  };
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = "Envoi…";
+
+  await fetch(SCRIPT_URL,{
+    method:"POST",
+    mode:"no-cors",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(payload)
+  });
+
+  sendBtn.textContent = "Envoyé !";
+  alert("Votre vote a été enregistré !");
+});
+
+</script>
+
+</body>
+</html>
